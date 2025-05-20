@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>💰 IFU dz - حاسبة الضريبة الجزافية</title>
+  <style>
+    body {
+      background: #e0f7fa;
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+      padding: 20px;
+      margin: 0;
+    }
+    .hidden {
+      display: none;
+    }
+    h2 {
+      color: #006064;
+      margin-bottom: 20px;
+    }
+    input, select, button {
+      padding: 12px;
+      margin: 8px 0;
+      font-size: 16px;
+      width: 90%;
+      max-width: 400px;
+      box-sizing: border-box;
+      border-radius: 6px;
+      border: 1px solid #006064;
+    }
+    button {
+      background-color: #00838f;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      font-weight: bold;
+    }
+    button:hover {
+      background-color: #005662;
+    }
+    .result {
+      font-weight: bold;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #004d40;
+      min-height: 40px;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+      word-wrap: break-word;
+    }
+    .share-buttons {
+      margin-top: 25px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .share-buttons button {
+      width: auto;
+      padding: 10px 18px;
+      font-size: 16px;
+      border-radius: 50px;
+    }
+    .error {
+      color: red;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- صفحة تسجيل الدخول -->
+  <div id="loginDiv">
+    <h2>تسجيل الدخول إلى IFU dz</h2>
+    <input type="text" id="username" placeholder="اسم المستخدم" />
+    <input type="password" id="password" placeholder="كلمة المرور" />
+    <button onclick="login()">دخول</button>
+    <div id="loginError" class="error"></div>
+  </div>
+
+  <!-- صفحة الحاسبة -->
+  <div id="calculatorDiv" class="hidden">
+    <h2>💰 IFU dz - حاسبة الضريبة الجزافية</h2>
+
+    <select id="mode">
+      <option value="from_amount">من رقم الأعمال → الضريبة</option>
+      <option value="from_tax">من الضريبة → رقم الأعمال</option>
+    </select><br />
+
+    <select id="rate">
+      <option value="5">IFU 5%</option>
+      <option value="12">IFU 12%</option>
+      <option value="0.5">مقاول ذاتي 0.5%</option>
+    </select><br />
+
+    <input type="number" id="value" placeholder="أدخل القيمة بالدج" /><br />
+
+    <button onclick="calculate()">احسب</button>
+
+    <div class="result" id="result"></div>
+
+    <div class="share-buttons">
+      <button onclick="shareWhatsApp()">شارك على واتساب</button>
+      <button onclick="shareTelegram()">شارك على تلغرام</button>
+    </div>
+  </div>
+
+  <script>
+    let lastResult = "";
+
+    // بيانات الدخول (تقدر تغيرها)
+    const correctUsername = "omar";
+    const correctPassword = "1234";
+
+    function login() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const errorDiv = document.getElementById("loginError");
+
+      if (username === correctUsername && password === correctPassword) {
+        document.getElementById("loginDiv").classList.add("hidden");
+        document.getElementById("calculatorDiv").classList.remove("hidden");
+        errorDiv.innerText = "";
+      } else {
+        errorDiv.innerText = "⚠️ اسم المستخدم أو كلمة المرور غير صحيحة!";
+      }
+    }
+
+    function calculate() {
+      const mode = document.getElementById("mode").value;
+      const rate = parseFloat(document.getElementById("rate").value);
+      const inputValue = parseFloat(document.getElementById("value").value);
+      const resultDiv = document.getElementById("result");
+
+      if (isNaN(inputValue) || inputValue <= 0) {
+        resultDiv.innerText = "❌ أدخل قيمة صحيحة أكبر من 0";
+        lastResult = "";
+        return;
+      }
+
+      let minTax = 0;
+      if (rate === 0.5) {
+        minTax = 10000;
+      } else if (rate === 5 || rate === 12) {
+        minTax = 30000;
+      }
+
+      let result = "";
+      if (mode === "from_amount") {
+        let tax = inputValue * (rate / 100);
+        if (tax < minTax) tax = minTax;
+        result = `💰 الضريبة المستحقة: ${tax.toFixed(2)} دج`;
+      } else {
+        let amount = inputValue / (rate / 100);
+        result = `📈 رقم الأعمال المطلوب للوصول إلى هذه الضريبة: ${amount.toFixed(2)} دج`;
+      }
+
+      resultDiv.innerText = result;
+      lastResult = result;
+    }
+
+    function shareWhatsApp() {
+      if (!lastResult) {
+        alert("يرجى إجراء الحساب أولاً!");
+        return;
+      }
+      const text = encodeURIComponent(`حاسبة IFU dz: ${lastResult}`);
+      const url = `https://wa.me/?text=${text}`;
+      window.open(url, "_blank");
+    }
+
+    function shareTelegram() {
+      if (!lastResult) {
+        alert("يرجى إجراء الحساب أولاً!");
+        return;
+      }
+      const text = encodeURIComponent(`حاسبة IFU dz: ${lastResult}`);
+      const url = `https://t.me/share/url?url=&text=${text}`;
+      window.open(url, "_blank");
+    }
+  </script>
+
+</body>
+</html>
