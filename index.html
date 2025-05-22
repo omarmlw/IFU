@@ -1,98 +1,213 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>💰 IFU dz - حساب الضريبة الجزافية</title>
-  <style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>حاسبة IFU dz</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Tajawal&display=swap');
+  body {
+    font-family: 'Tajawal', sans-serif;
+    padding: 20px;
+    direction: rtl;
+    max-width: 500px;
+    margin: auto;
+    background: #f5f5f5;
+  }
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  label, select, input, button {
+    display: block;
+    width: 100%;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 16px;
+    margin: 10px 0 5px;
+    box-sizing: border-box;
+  }
+  select, input {
+    padding: 10px;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+  }
+  button {
+    background-color: #007bff;
+    border: none;
+    color: white;
+    padding: 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background-color: #0056b3;
+  }
+  #result {
+    margin-top: 25px;
+    font-size: 18px;
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 8px;
+    background: white;
+    min-height: 110px;
+  }
+  .error {
+    color: #d33;
+    font-weight: 700;
+  }
+  #result p {
+    margin: 6px 0;
+  }
+  /* متجاوب للموبايل */
+  @media (max-width: 600px) {
     body {
-      font-family: 'Arial', sans-serif;
-      background-color: #f5f5f5;
-      text-align: center;
-      padding: 20px;
-      direction: rtl;
+      padding: 15px;
+      max-width: 100%;
     }
-    h1 {
-      color: #2c3e50;
+    h2 {
+      font-size: 24px;
     }
-    input, select, button {
-      margin: 10px;
-      padding: 10px;
-      font-size: 1em;
-      width: 90%;
-      max-width: 400px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-    button {
-      background-color: #27ae60;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #219150;
+    button, select, input {
+      font-size: 18px;
+      padding: 14px;
     }
     #result {
-      margin-top: 20px;
-      font-size: 1.2em;
-      font-weight: bold;
-      color: #2c3e50;
+      font-size: 16px;
+      padding: 15px;
     }
-    .share-buttons {
-      margin-top: 20px;
-    }
-    .share-buttons a {
-      margin: 5px;
-      padding: 10px 15px;
-      text-decoration: none;
-      background-color: #2980b9;
-      color: white;
-      border-radius: 6px;
-      display: inline-block;
-    }
-    .share-buttons a.telegram {
-      background-color: #0088cc;
-    }
-    @media screen and (max-width: 500px) {
-      input, select, button {
-        font-size: 1em;
-      }
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
-  <h1>💰 IFU dz</h1>
-  <p>احسب الضريبة الجزافية الخاصة بك</p>
-  <input type="number" id="revenue" placeholder="أدخل رقم الأعمال بالدج" />
-  <select id="rate">
-    <option value="0.5">مقاول ذاتي (0.5%) - حد أدنى 10000 دج</option>
-    <option value="5">نشاط عادي (5%) - حد أدنى 30000 دج</option>
-    <option value="12">نشاط خاضع لـ 12% - حد أدنى 30000 دج</option>
-  </select>
-  <button onclick="calculate()">احسب</button>
-  <div id="result"></div>
 
-  <div class="share-buttons">
-    <a href="#" id="whatsapp" target="_blank">مشاركة عبر واتساب</a>
-    <a href="#" id="telegram" class="telegram" target="_blank">مشاركة عبر تلغرام</a>
-  </div>
+<h2>حاسبة IFU dz 💰</h2>
 
-  <script>
-    function calculate() {
-      const revenue = parseFloat(document.getElementById("revenue").value);
-      const rate = parseFloat(document.getElementById("rate").value);
-      let minTax = rate === 0.5 ? 10000 : 30000;
-      let tax = revenue * (rate / 100);
-      if (tax < minTax) tax = minTax;
+<label for="calcType">اختر نوع الحساب:</label>
+<select id="calcType">
+  <option value="turnover-to-tax">حساب الضريبة من رقم الأعمال</option>
+  <option value="tax-to-turnover">حساب رقم الأعمال من الضريبة</option>
+</select>
 
-      document.getElementById("result").innerText = `الضريبة المستحقة: ${tax.toFixed(2)} دج`;
+<label for="inputValue" id="inputLabel">أدخل رقم الأعمال (دج):</label>
+<input type="number" id="inputValue" min="0" placeholder="أدخل الرقم هنا" />
 
-      // روابط المشاركة
-      const message = `📊 رقم الأعمال: ${revenue} دج\n💸 النسبة: ${rate}%\n💰 الضريبة المستحقة: ${tax.toFixed(2)} دج\n#IFU_dz`;
-      document.getElementById("whatsapp").href = `https://wa.me/?text=${encodeURIComponent(message)}`;
-      document.getElementById("telegram").href = `https://t.me/share/url?url=&text=${encodeURIComponent(message)}`;
+<label for="taxRate">اختر نسبة الضريبة:</label>
+<select id="taxRate">
+  <option value="0.05">5%</option>
+  <option value="0.12">12%</option>
+  <option value="0.005">0.5% (مقاول ذاتي)</option>
+</select>
+
+<button id="calculateBtn">احسب</button>
+<!-- زر حفظ الصورة -->
+<button id="saveImageBtn" style="display:none; margin-top: 10px; background-color: #28a745;">حفظ النتيجة كصورة</button>
+
+<div id="result"></div>
+
+<!-- إضافة مكتبة html2canvas -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+  const calcType = document.getElementById('calcType');
+  const inputLabel = document.getElementById('inputLabel');
+  const inputValue = document.getElementById('inputValue');
+  const taxRate = document.getElementById('taxRate');
+  const calculateBtn = document.getElementById('calculateBtn');
+  const resultDiv = document.getElementById('result');
+  const saveImageBtn = document.getElementById('saveImageBtn');
+
+  function formatNumber(value) {
+    let parts = Number(value).toFixed(2).split('.');
+    return parts[0] + ',' + parts[1];
+  }
+
+  function calculate() {
+    const val = parseFloat(inputValue.value);
+    const rate = parseFloat(taxRate.value);
+    const type = calcType.value;
+
+    if (inputValue.value.trim() === '') {
+      resultDiv.innerHTML = '<span class="error">أدخل الرقم من فضلك</span>';
+      saveImageBtn.style.display = 'none';
+      return;
     }
-  </script>
+    if (isNaN(val) || val < 0) {
+      resultDiv.innerHTML = '<span class="error">أدخل قيمة صحيحة أكبر من الصفر من فضلك</span>';
+      saveImageBtn.style.display = 'none';
+      return;
+    }
+
+    let result = 0;
+    let message = '';
+
+    if (type === 'turnover-to-tax') {
+      let tax = val * rate;
+
+      if (rate === 0.005 && tax < 10000) tax = 10000;
+      else if ((rate === 0.05 || rate === 0.12) && tax < 30000) tax = 30000;
+
+      result = tax;
+      message = `الضريبة المحسوبة: ${formatNumber(result)} دج`;
+    } else {
+      if (rate === 0.005 && val < 10000) {
+        resultDiv.innerHTML = '<span class="error">أدنى ضريبة للمقاول الذاتي هي 10000 دج</span>';
+        saveImageBtn.style.display = 'none';
+        return;
+      } else if ((rate === 0.05 || rate === 0.12) && val < 30000) {
+        resultDiv.innerHTML = '<span class="error">أدنى ضريبة لأصحاب الضريبة الجزافية هي 30000 دج</span>';
+        saveImageBtn.style.display = 'none';
+        return;
+      }
+
+      let turnover = val / rate;
+      result = turnover;
+      message = `رقم الأعمال المحسوب: ${formatNumber(result)} دج`;
+    }
+
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const dd = String(today.getDate()).padStart(2, '0');
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dateStr = `${dd}/${mm}/${yyyy}`;
+
+    resultDiv.innerHTML = `
+      <p>${message}</p>
+      <p>✅ التاريخ: ${dateStr}</p>
+      <p>✅ By OMAR MLW</p>
+      <p>© ${yyyy} جميع الحقوق محفوظة</p>
+    `;
+
+    // اظهار زر حفظ الصورة عند وجود نتيجة صحيحة
+    saveImageBtn.style.display = 'block';
+  }
+
+  calcType.addEventListener('change', () => {
+    if (calcType.value === 'turnover-to-tax') {
+      inputLabel.textContent = 'أدخل رقم الأعمال (دج):';
+      inputValue.placeholder = 'أدخل رقم الأعمال هنا';
+    } else {
+      inputLabel.textContent = 'أدخل الضريبة (دج):';
+      inputValue.placeholder = 'أدخل قيمة الضريبة هنا';
+    }
+    resultDiv.innerHTML = '';
+    inputValue.value = '';
+    saveImageBtn.style.display = 'none';
+  });
+
+  calculateBtn.addEventListener('click', calculate);
+
+  saveImageBtn.addEventListener('click', () => {
+    html2canvas(resultDiv).then(canvas => {
+      // تحويل الصورة إلى رابط تحميل
+      const link = document.createElement('a');
+      link.download = 'نتيجة_حاسبة_IFU_dz.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+  });
+</script>
+
 </body>
 </html>
